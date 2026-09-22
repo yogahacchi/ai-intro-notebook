@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<title>AI入門｜HacchiのやさしいAI塾</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F8F3EC; --brown:#4A3220; --brownd:#3A2A1C; --surface:#FCFAF6;
+    --teal:#2E6468; --teald:#24504F; --terra:#C67139; --taupe:#82796A;
+    --line:#E5DCCC; --tint:#E4ECEB; --suntint:#F6E7DA; --card:#EFE8DB;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{background:#E8E0D4;color-scheme:light;font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
+    color:var(--brown);-webkit-font-smoothing:antialiased;overflow:hidden;}
+  h1,h2,h3{font-family:"Shippori Mincho",serif;line-height:1.4;}
+
+  /* reader */
+  .reader{position:fixed;inset:0;overflow:hidden;}
+  .track{display:flex;height:100%;width:100%;transition:transform .6s cubic-bezier(.66,0,.2,1);}
+  .page{flex:0 0 100%;height:100%;overflow-y:auto;position:relative;background:var(--cream);
+    display:flex;flex-direction:column;justify-content:flex-start;padding:76px 30px 96px;}
+  .inner{max-width:600px;margin:0 auto;width:100%;}
+
+  /* entrance — slow & calm */
+  .anim{opacity:0;transform:translateY(20px);}
+  .page.active .anim{animation:rise 1s cubic-bezier(.2,.7,.2,1) forwards;}
+  .page.active .d1{animation-delay:.2s;} .page.active .d2{animation-delay:.6s;}
+  .page.active .d3{animation-delay:1s;} .page.active .d4{animation-delay:1.4s;}
+  .page.active .d5{animation-delay:1.8s;} .page.active .d6{animation-delay:2.2s;}
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+  .checklist li{opacity:0;transform:translateX(-14px);}
+  .page.active .checklist li{animation:slidein .65s cubic-bezier(.2,.7,.2,1) forwards;}
+  .page.active .checklist li:nth-child(1){animation-delay:.5s;}
+  .page.active .checklist li:nth-child(2){animation-delay:.72s;}
+  .page.active .checklist li:nth-child(3){animation-delay:.94s;}
+  .page.active .checklist li:nth-child(4){animation-delay:1.16s;}
+  .page.active .checklist li:nth-child(5){animation-delay:1.38s;}
+  .page.active .checklist li:nth-child(6){animation-delay:1.6s;}
+  .page.active .checklist li:nth-child(7){animation-delay:1.82s;}
+  @keyframes slidein{to{opacity:1;transform:translateX(0);}}
+  .evo{position:relative;margin:16px 0 4px;}
+  .evo::before{content:"";position:absolute;left:16px;top:16px;bottom:20px;width:2px;background:var(--line);}
+  .evo .estep{position:relative;padding:0 0 15px 46px;opacity:0;transform:translateX(-14px);}
+  .evo .estep:last-child{padding-bottom:0;}
+  .evo .enum{position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--tint);color:var(--teald);display:flex;align-items:center;justify-content:center;font-family:"Shippori Mincho",serif;font-weight:700;font-size:15px;}
+  .evo .estep.base .enum{background:var(--brown);color:var(--cream);font-size:14px;}
+  .evo .estep.last .enum{background:var(--terra);color:#fff;}
+  .evo .ename{font-family:"Shippori Mincho",serif;font-size:17px;font-weight:600;color:var(--brown);margin:0 0 1px;}
+  .evo .eaim{font-size:13.5px;color:var(--taupe);line-height:1.55;margin:0;}
+  .page.active .evo .estep{animation:slidein .6s cubic-bezier(.2,.7,.2,1) forwards;}
+  .page.active .evo .estep:nth-child(1){animation-delay:.45s;}
+  .page.active .evo .estep:nth-child(2){animation-delay:.62s;}
+  .page.active .evo .estep:nth-child(3){animation-delay:.79s;}
+  .page.active .evo .estep:nth-child(4){animation-delay:.96s;}
+  .page.active .evo .estep:nth-child(5){animation-delay:1.13s;}
+  .page.active .evo .estep:nth-child(6){animation-delay:1.3s;}
+  .page.active .evo .estep:nth-child(7){animation-delay:1.47s;}
+  .page.active .evo .estep:nth-child(8){animation-delay:1.64s;}
+
+  /* shared content styles */
+  .kicker{display:flex;align-items:center;gap:9px;font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--teal);font-weight:700;margin-bottom:14px;}
+  .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--terra);flex:none;}
+  h2.title{font-size:29px;font-weight:600;color:var(--brown);margin-bottom:18px;}
+  p.body{font-size:16px;line-height:1.95;color:var(--brown);margin-bottom:16px;}
+  p.body b{color:var(--teald);}
+  .lead{font-size:16px;color:var(--taupe);margin-bottom:16px;}
+  .concept{background:var(--tint);border-left:4px solid var(--teal);border-radius:0 12px 12px 0;
+    padding:16px 20px;font-size:16px;line-height:1.85;color:var(--teald);font-weight:500;margin:4px 0 22px;}
+  .callout{background:var(--suntint);border-radius:12px;padding:14px 18px;font-size:15px;line-height:1.8;
+    color:#7A4A2C;margin:4px 0 20px;}
+  .callout b{color:var(--terra);}
+  .ctabtn{display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:13px 24px;border-radius:999px;}
+  .ctabtn.terra{background:var(--terra);}
+  .toolcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:8px 0 18px;text-align:center;}
+  .note{font-size:13.5px;color:#4E4636;line-height:1.7;margin-top:8px;}
+
+  /* unpack rows */
+  .unpack{margin:6px 0 18px;}
+  .unpack .row{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed var(--line);}
+  .unpack .row:last-child{border-bottom:none;}
+  .unpack .from{flex:0 0 42%;font-size:13.5px;color:var(--taupe);line-height:1.6;}
+  .unpack .to{flex:1;font-size:15px;color:var(--brown);font-weight:500;line-height:1.6;}
+  .unpack .to::before{content:"→ ";color:var(--terra);font-weight:700;}
+
+  /* cards / lists */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 18px;margin-bottom:12px;
+    display:flex;gap:14px;align-items:flex-start;}
+  .card .n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--teald);
+    display:flex;align-items:center;justify-content:center;font-family:"Shippori Mincho",serif;font-weight:700;font-size:15px;}
+  .card .n.terra{background:var(--suntint);color:var(--terra);}
+  .card .tx{flex:1;}
+  .card .tx h3{font-size:17px;margin-bottom:3px;color:var(--brown);}
+  .card .tx p{font-size:14px;line-height:1.65;color:var(--taupe);margin:0;}
+  .card .tx b{color:var(--teald);}
+
+  ul.plain{list-style:none;margin:4px 0 18px;}
+  ul.plain li{position:relative;padding:7px 0 7px 22px;font-size:15.5px;line-height:1.7;}
+  ul.plain li::before{content:"";position:absolute;left:2px;top:15px;width:8px;height:8px;border-radius:50%;background:var(--terra);}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 16px;border-radius:12px;overflow:hidden;border:1px solid var(--line);}
+  .tbl th,.tbl td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;}
+  .tbl thead th{background:var(--teal);color:#fff;font-size:12.5px;font-weight:700;}
+  .tbl td:first-child{font-weight:700;color:var(--brown);white-space:nowrap;}
+  .tbl tr:last-child td{border-bottom:none;}
+
+  /* recipe steps */
+  .recipe .step{display:flex;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);}
+  .recipe .step:last-child{border-bottom:none;}
+  .recipe .num{flex:none;width:34px;height:34px;border-radius:9px;background:var(--teald);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:"Shippori Mincho",serif;font-weight:700;font-size:16px;}
+  .recipe h3{font-size:16px;margin-bottom:2px;}
+  .recipe p{font-size:13.5px;color:var(--taupe);line-height:1.6;margin:0;}
+  .tokflow{background:var(--tint);border-radius:9px;padding:8px 10px;margin:8px 0 5px;font-size:12.5px;color:var(--teald);text-align:center;font-weight:600;line-height:1.7;}
+  .tokflow .a{color:var(--terra);margin:0 6px;}
+  .term{display:inline-block;background:var(--tint);color:var(--teald);font-size:11px;font-weight:700;padding:3px 11px;border-radius:999px;letter-spacing:.03em;margin:4px 0 8px;line-height:1.5;}
+
+  .big-quote{font-family:"Shippori Mincho",serif;font-size:25px;font-weight:600;line-height:1.55;color:var(--brown);margin-bottom:22px;}
+  .big-quote em{color:var(--terra);font-style:normal;}
+  .probs{margin:6px 0 18px;}
+  .prob{display:flex;align-items:center;gap:12px;margin:9px 0;}
+  .prob .w{flex:0 0 46px;font-family:"Shippori Mincho",serif;font-weight:600;font-size:16px;color:var(--brown);}
+  .prob .bar{flex:1;height:22px;background:var(--card);border-radius:7px;overflow:hidden;}
+  .prob .bar i{display:block;height:100%;width:0;background:var(--teal);border-radius:7px;transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+  .prob .bar i.win{background:var(--terra);}
+  .page.active .prob .bar i{width:var(--p);transition-delay:1.2s;}
+  .prob .pct{flex:0 0 42px;text-align:right;font-size:13px;color:var(--taupe);}
+  svg{display:block;width:100%;height:auto;}
+  .figwrap{margin:6px 0 20px;}
+  .figcap{font-size:12.5px;color:var(--taupe);text-align:center;margin-top:8px;}
+  .nest{margin:6px 0 2px;}
+  .nest-ai{border:1.6px dashed #82796A;border-radius:16px;padding:11px 14px 14px;}
+  .nest-ml{border:1.6px solid #2E6468;border-radius:14px;padding:11px 14px 14px;background:#FCFAF6;margin-top:10px;}
+  .nest-dl{border:1.6px solid #24504F;border-radius:12px;padding:11px 14px;background:#EAF0EE;margin-top:10px;}
+  .nest-head{display:flex;align-items:center;gap:9px;}
+  .nest-head svg{width:24px;height:24px;flex:none;}
+  .nest-head .nlabel{font-family:"Shippori Mincho",serif;font-weight:600;font-size:16px;}
+  .nest-ai>.nest-head .nlabel{color:#4A3220;}
+  .nest-ml>.nest-head .nlabel{color:#2E6468;}
+  .nest-dl>.nest-head .nlabel{color:#24504F;}
+  .timeline{position:relative;margin:12px 0 20px;}
+  .timeline::before{content:"";position:absolute;left:7px;top:9px;bottom:14px;width:2px;background:#6E5B48;}
+  .tl-item{position:relative;padding:0 0 16px 30px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{position:absolute;left:1px;top:3px;width:14px;height:14px;border-radius:50%;border:2px solid #3A2A1C;}
+  .tl-c{font-size:14px;line-height:1.55;color:#E3D8C8;}
+  .tl-c b{display:block;color:#F8F3EC;font-family:"Shippori Mincho",serif;font-weight:600;font-size:15.5px;margin-bottom:1px;}
+
+  /* COVER */
+  .cover{background:var(--brown);color:var(--cream);justify-content:center;}
+  .divider{background:var(--brown);color:var(--cream);justify-content:center;text-align:center;}
+  .divider .dv-num{font-family:"Shippori Mincho",serif;font-size:19px;font-weight:600;color:var(--terra);letter-spacing:.12em;margin-bottom:16px;}
+  .divider .dv-rule{width:40px;height:2px;background:rgba(230,168,124,.55);margin:0 auto 20px;border-radius:2px;}
+  .divider .dv-title{font-family:"Shippori Mincho",serif;font-size:31px;font-weight:700;color:var(--cream);line-height:1.45;}
+  .leaf{width:1.4em;height:1.4em;flex:none;}
+  .cover .badge{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(248,243,236,.4);border-radius:999px;
+    padding:8px 18px;font-size:13px;font-weight:700;color:var(--cream);margin-bottom:32px;}
+  .cover h1{font-size:62px;font-weight:700;color:var(--cream);margin-bottom:14px;letter-spacing:.03em;}
+  .cover .tagline{font-size:16px;color:#D9CFC0;margin-bottom:30px;}
+  .cover .rule{width:52px;height:3px;background:var(--terra);border-radius:2px;margin-bottom:30px;}
+  .cover .msg{font-family:"Shippori Mincho",serif;font-size:23px;font-weight:600;line-height:1.6;color:var(--cream);}
+  .cover .ver{margin-top:30px;font-size:13px;color:#E6DDCE;}
+  .cover .bdot{position:absolute;border-radius:50%;}
+  .cover .bd1{width:200px;height:200px;background:var(--teal);opacity:.22;top:-50px;right:-40px;}
+  .cover .bd2{width:90px;height:90px;background:var(--terra);opacity:.5;top:110px;right:70px;}
+  .cover .bd3{width:150px;height:150px;background:var(--card);opacity:.1;bottom:50px;left:-40px;}
+
+  .band{background:var(--brown);color:var(--cream);}
+  .band .kicker{color:#9BC2BD;} .band h2.title,.band .big-quote{color:var(--cream);}
+  .band p.body{color:#E3D8C8;} .band p.body b{color:#E8A87C;}
+
+  /* chrome */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:10;height:52px;display:flex;align-items:center;gap:12px;
+    padding:0 16px;background:rgba(248,243,236,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
+  .tocbtn{border:none;background:none;font-size:22px;cursor:pointer;color:var(--teald);line-height:1;padding:4px;}
+  .brand{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--teal);letter-spacing:.03em;}
+  .brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hleaf{width:1.35em;height:1.35em;display:inline-block;flex:none;vertical-align:-0.28em;}
+  .sprig,.star,.smile,.iico{display:inline-block;height:1.3em;width:1.3em;vertical-align:-0.28em;}
+  .ibig{display:inline-block;height:2em;width:2em;vertical-align:-0.62em;}
+  .nb{white-space:nowrap;}
+  .counter{font-family:"Noto Sans Mono CJK JP",monospace;font-size:12px;color:var(--taupe);}
+  .progress{position:fixed;top:52px;left:0;height:3px;background:var(--terra);z-index:11;transition:width .5s ease;width:0;}
+
+  .toc{position:fixed;inset:0;z-index:20;background:rgba(74,50,32,.4);opacity:0;pointer-events:none;transition:.25s;}
+  .toc.open{opacity:1;pointer-events:auto;}
+  .toc-panel{position:absolute;left:0;top:0;bottom:0;width:82%;max-width:340px;background:var(--surface);
+    padding:26px 22px;overflow-y:auto;transform:translateX(-100%);transition:transform .3s;}
+  .toc.open .toc-panel{transform:translateX(0);}
+  .toc h3{font-size:15px;color:var(--teald);margin-bottom:14px;letter-spacing:.04em;}
+  .toc a{display:block;padding:7px 10px;border-radius:9px;text-decoration:none;cursor:pointer;line-height:1.5;}
+  .toc a:hover{background:var(--tint);}
+  .toc-chapter{margin-top:12px;font-size:15px;}
+  .toc-chapter .lbl{color:var(--terra);font-weight:700;}
+  .toc-chapter .ti{color:var(--brown);font-weight:700;font-family:"Shippori Mincho",serif;}
+  .toc-section{padding-left:26px;}
+  .toc-section .lbl{display:inline-block;min-width:36px;color:var(--terra);font-weight:700;font-size:12px;}
+  .toc-section .ti{color:var(--brown);font-size:13.5px;}
+  .toc-plain .ti{color:var(--taupe);font-size:13.5px;}
+
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;background:linear-gradient(transparent,rgba(232,224,212,.9) 45%);}
+  .nav button{border:1px solid var(--line);background:rgba(252,250,246,.92);color:var(--teald);
+    width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .nav button:hover{background:var(--tint);} .nav button:disabled{opacity:.32;cursor:default;}
+  .hint{position:fixed;bottom:80px;left:0;right:0;text-align:center;font-size:13px;color:#E6DDCE;z-index:9;pointer-events:none;
+    animation:fade 2.8s ease-in-out infinite;}
+  @keyframes fade{0%,100%{opacity:.35;}50%{opacity:.95;}}
+
+  @media(max-width:520px){
+    .cover h1{font-size:46px;} .cover .msg{font-size:19px;} h2.title{font-size:24px;}
+    .page{padding:70px 22px 92px;} .unpack .from{flex-basis:44%;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .track,.progress{transition:none;} .page.active .anim,.page.active .checklist li,.page.active .evo .estep{animation:none;opacity:1;transform:none;} .hint{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tocbtn" id="tocbtn" aria-label="目次">☰</button>
+  <div class="brand"><svg class="hleaf" viewBox="0 0 24 24" fill="none" stroke="#8BAE68" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5 19C5 11 11 5 19 5C19 13 13 19 5 19Z"/><path d="M5 19C9 15 13 11 19 5"/></svg><span>HacchiのやさしいAI塾</span></div>
+  <div class="counter" id="counter">1 / 27</div>
+</div>
+<div class="progress" id="progress"></div>
+
+<div class="reader">
+  <div class="track" id="track">
+
+    <!-- 1 COVER -->
+    <section class="page cover active" data-toc="表紙">
+      <span class="bdot bd1"></span><span class="bdot bd2"></span><span class="bdot bd3"></span>
+      <div class="inner">
+        <span class="badge anim d1"><svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="#8BAE68" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5 19C5 11 11 5 19 5C19 13 13 19 5 19Z"/><path d="M5 19C9 15 13 11 19 5"/></svg>HacchiのやさしいAI塾</span>
+        <h1 class="anim d2">AI入門</h1>
+        <p class="tagline anim d2">〜「AIってなに?」を、やさしくひも解く〜</p>
+        <div class="rule anim d3"></div>
+        <p class="msg anim d3">AIを“使える人”になる前に、<br>AIを“理解する”。</p>
+        <p class="ver anim d4">2026年9月版</p>
+      </div>
+    </section>
+
+    <!-- 2 目次 -->
+    <section class="page" data-toc="目次">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>Contents</div>
+        <h2 class="title anim d1">この本の歩き方</h2>
+        <p class="body anim d2">全11章＋寄り道。<b>順番に読んでも、気になるところだけつまんでも</b>OKです。左上の <b>☰</b> から、いつでも好きな章へ飛べま<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+        <p class="body anim d3">読み終わるころには、こんなことが“腑に落ちて”いるは<span class="nb">ず<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span></p>
+        <ul class="plain anim d4">
+          <li>AIって、そもそも何?（定義・機械学習・深層学習）</li>
+          <li>AIの本質 ―― AIは「魔法」じゃない</li>
+          <li>生成AIのしくみ（Transformer・LLM）</li>
+          <li>AIの種類・できること・最新のAIエージェント</li>
+          <li>間違い・懸念点、そして「どう付き合う?」</li>
+        </ul>
+        <p class="callout anim d5">むずかしく感じたら、読み飛ばして大丈夫。<b>「そういうことか」と腑に落ちること</b>を目指しましょう😊</p>
+      </div>
+    </section>
+
+    <!-- 3 はじめに -->
+    <section class="page" data-toc="0｜はじめに">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>0 ・ はじめに</div>
+        <h2 class="title anim d1">この本で、目指すこと</h2>
+        <div class="card anim d2"><span class="n">①</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">AIへの「なんとなく怖い」を、少しずつ減らす</p></div></div>
+        <div class="card anim d3"><span class="n">②</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">AIで「できること・できないこと」を知る</p></div></div>
+        <div class="card anim d4"><span class="n">③</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">正しく使うための、基本の考え方を身につける</p></div></div>
+        <div class="card anim d5"><span class="n terra">④</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)"><b>AIに振り回されず、自分がAIを“使う側”になる</b></p></div></div>
+      </div>
+    </section>
+
+    <!-- 4 Ch1 AIとは -->
+    <section class="page" data-toc="1｜そもそもAIとは?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>1 ・ そもそもAIとは?</div>
+        <h2 class="title anim d1">AI＝人工知能</h2>
+        <p class="lead anim d2">むずかしい定義より、まずはこのイメージでOK。</p>
+        <div class="concept anim d2">人間が「考える・判断する・認識する」といった<b>知的な作業を、コンピューターに行わせる</b>技術。<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2" y="5.5" width="13.5" height="9.5" rx="2"/><path d="M6 19h5.5M8.75 15v4"/><circle cx="18.5" cy="6.5" r="1.5"/><path d="M18.5 3.2v1.3M18.5 8.5v1.3M15.2 6.5h1.3M20.5 6.5h1.3M16.2 4.2l.9.9M19.9 7.9l.9.9M16.2 8.8l.9-.9M19.9 5.1l.9-.9"/></svg></div>
+        <p class="body anim d3">そしてもうひとつ大事なこと。<b>AIは「人間の脳そのもの」ではありません。</b>会話ができて、文章も書けるけれど、人間と同じように世界を“わかっている”わけではないのです。</p>
+      </div>
+    </section>
+
+    <!-- 5 Ch1 AIって、つまり? -->
+    <section class="page" data-toc="1｜AIって、つまり?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>1 ・ AIって、つまり?</div>
+        <h2 class="title anim d1">やさしく言うと、こんな“仕組み”</h2>
+        <div class="card anim d2"><span class="n">1</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">たくさんのお手本から<b>学んで</b></p></div></div>
+        <div class="card anim d3"><span class="n">2</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">学んだことを“意味のまとまり”として<b>ためて</b></p></div></div>
+        <div class="card anim d4"><span class="n">3</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">質問されたら、そのためた知識を<b>使って</b></p></div></div>
+        <div class="card anim d5"><span class="n terra">4</span><div class="tx"><p style="font-size:15.5px;color:var(--brown)">答えを出したり、自分で<b>処理を進めたり</b>できる</p></div></div>
+        <p class="callout anim d6">つまり、<b>「学んで・ためて・使って・自分で動く」仕組み</b>ということ😊</p>
+      </div>
+    </section>
+
+    <!-- 6 Ch1 脳ではない＋毎日使ってる -->
+    <section class="page" data-toc="1｜実はもう使っている">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>1 ・ 実は、もう毎日使っています</div>
+        <h2 class="title anim d1">AIは“身近な道具”</h2>
+        <p class="body anim d2">「未来の特別な何か」ではありません。あなたはもう、毎日AIを使っています。</p>
+        <ul class="plain anim d3">
+          <li>スマホの<b>予測変換</b>（打とうとした言葉を先回り）</li>
+          <li>写真アプリの<b>顔・場所の自動分類</b></li>
+          <li>動画やSNSの<b>「おすすめ」表示</b></li>
+          <li>「ねぇSiri」「OK Google」の<b>音声アシスタント</b></li>
+        </ul>
+        <p class="callout anim d4">そして2026年のいま話題なのが<b>生成AI</b>。ChatGPTやClaudeのように、人と話すように文章・画像・アイデアを“生み出して”くれるAIです✨</p>
+      </div>
+    </section>
+
+    <!-- 9 寄り道 歴史 -->
+    <section class="page band" data-toc="寄り道｜AIの歴史">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>寄り道 ・ AIの歴史</div>
+        <h2 class="title anim d1">実は“70年”の物語</h2>
+        <p class="body anim d2">「ここ数年で急に?」と思いきや、AI研究は<b>約70年前</b>から続く、意外と長い物語です。</p>
+        <div class="timeline anim d3">
+          <div class="tl-item"><span class="tl-dot" style="background:#E8A87C"></span><div class="tl-c"><b>1956年</b>「人工知能（AI）」誕生</div></div>
+          <div class="tl-item"><span class="tl-dot" style="background:#9BC2BD"></span><div class="tl-c"><b>〜停滞と期待</b>“AIの冬”を何度もくり返す</div></div>
+          <div class="tl-item"><span class="tl-dot" style="background:#9BC2BD"></span><div class="tl-c"><b>2010年代</b>ディープラーニングが大ブレイク</div></div>
+          <div class="tl-item"><span class="tl-dot" style="background:#E8A87C"></span><div class="tl-c"><b>2017年</b>Transformer 登場（生成AIの土台）</div></div>
+          <div class="tl-item"><span class="tl-dot" style="background:#E8A87C"></span><div class="tl-c"><b>2022〜2026年</b>ChatGPT〜“自分で動く”AIエージェントへ</div></div>
+        </div>
+        <p class="body anim d4">突然の魔法ではなく、<b>70年かけて少しずつ育ってきた技術</b>。だから、いまの進化にも地に足のついた背景がありま<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- 10 Ch2 本質 flow -->
+    <section class="page" data-toc="2｜AIの本質">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>2 ・ AIの本質</div>
+        <h2 class="title anim d1">AIは「魔法」ではない</h2>
+        <p class="body anim d2">AIは、何でも正解を知っているわけではありません。やっているのは、ざっくり言うとこういうこと。</p>
+        <div class="concept anim d2">大量のデータからパターンを学習し、入力に対して<b>「次に、どんな言葉が来る可能性が高いか」を計算して出力</b>している。</div>
+        <div class="figwrap anim d3">
+          <svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="45" width="150" height="60" rx="12" fill="#FCFAF6" stroke="#2E6468" stroke-width="2"/>
+            <text x="83" y="72" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="17" font-weight="600" fill="#24504F">あなたの指示</text>
+            <text x="83" y="93" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#82796A">（入力）</text>
+            <rect x="225" y="40" width="150" height="70" rx="12" fill="#4A3220"/>
+            <text x="300" y="70" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="16" font-weight="600" fill="#F8F3EC">AIが</text>
+            <text x="300" y="92" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="16" font-weight="600" fill="#F8F3EC">パターンを計算</text>
+            <rect x="442" y="45" width="150" height="60" rx="12" fill="#FCFAF6" stroke="#C67139" stroke-width="2"/>
+            <text x="517" y="72" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="17" font-weight="600" fill="#C67139">出力</text>
+            <text x="517" y="93" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#82796A">（文章など）</text>
+            <line x1="162" y1="75" x2="221" y2="75" stroke="#E5DCCC" stroke-width="2"/>
+            <line x1="379" y1="75" x2="438" y2="75" stroke="#E5DCCC" stroke-width="2"/>
+            <circle r="4" fill="#2E6468"><animate attributeName="cx" from="164" to="219" dur="1.8s" repeatCount="indefinite"/><animate attributeName="cy" values="75;75" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle r="4" fill="#C67139"><animate attributeName="cx" from="381" to="436" dur="1.8s" begin="0.6s" repeatCount="indefinite"/><animate attributeName="cy" values="75;75" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" dur="1.8s" begin="0.6s" repeatCount="indefinite"/></circle>
+          </svg>
+        </div>
+        <p class="body anim d4">「今日はいい天気ですね」の続きなら、<b>「お出かけしたくなりますね」</b>のように“ありそうな言葉”を組み立てているのです。</p>
+      </div>
+    </section>
+
+    <!-- 11 Ch2 まとめ -->
+    <section class="page" data-toc="2｜似たもの探しの名人">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>2 ・ まとめ</div>
+        <p class="big-quote anim d1">AIは、壮大な<br><em>“似たもの探し”の名人</em>。</p>
+        <div class="card anim d2"><span class="n">1</span><div class="tx"><p style="font-size:15px;color:var(--brown)">AIは<b>「もっともらしい答え」</b>を作るのが得意。</p></div></div>
+        <div class="card anim d3"><span class="n">2</span><div class="tx"><p style="font-size:15px;color:var(--brown)">でも、それが<b>いつも正しいとは限らない</b>（自信満々に間違えることも）。</p></div></div>
+        <div class="card anim d4"><span class="n terra">3</span><div class="tx"><p style="font-size:15px;color:var(--brown)">問いを立て、見極め、<b>最後に決めるのは、いつも人間</b>。</p></div></div>
+      </div>
+    </section>
+
+    <!-- コラム: AI進化の7つのピース -->
+    <section class="page" data-toc="コラム｜AIの進化を支えた7つのピース">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>コラム ・ 進化のものがたり</div>
+        <h2 class="title anim d1">AIの進化を支えた<br>7つのピース</h2>
+        <p class="body anim d2">人間は、どうやってコンピューターに“学ぶ力”を持たせていったのか？——その歩みを、ひと続きで。</p>
+        <div class="evo anim d3">
+          <div class="estep base"><span class="enum">◎</span><p class="ename">コンピューター <span style="font-size:12px;color:var(--terra);font-weight:700">出発点</span></p><p class="eaim">人間が決めたルールを、正確に実行する</p></div>
+          <div class="estep"><span class="enum">1</span><p class="ename">AI</p><p class="eaim">人間のように知的なことを、機械にさせたい</p></div>
+          <div class="estep"><span class="enum">2</span><p class="ename">機械学習</p><p class="eaim">ルールを全部教えるのではなく、データから学ばせよう</p></div>
+          <div class="estep"><span class="enum">3</span><p class="ename">ニューラルネットワーク</p><p class="eaim">人間の脳の神経回路を、ヒントにしてみよう</p></div>
+          <div class="estep"><span class="enum">4</span><p class="ename">深層学習</p><p class="eaim">ネットワークを深くして、もっと複雑なパターンを学ばせよう</p></div>
+          <div class="estep"><span class="enum">5</span><p class="ename">Transformer</p><p class="eaim">文章の中の、言葉同士の関係を上手に捉えよう</p></div>
+          <div class="estep"><span class="enum">6</span><p class="ename">LLM</p><p class="eaim">ものすごく大量の文章で、学習させよう</p></div>
+          <div class="estep last"><span class="enum">7</span><p class="ename">生成AI</p><p class="eaim">学んだパターンを使って、新しいものを生成させよう</p></div>
+        </div>
+        <p class="callout anim d4">——こうして、AIは「学んだことから、<b>新しいものを生み出せる</b>」ようになりました。</p>
+      </div>
+    </section>
+
+    <!-- Ch3: AI・機械学習・深層学習（1章から移動） -->
+    <section class="page" data-toc="3｜AI・機械学習・深層学習">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ AIと、機械学習・深層学習</div>
+        <h2 class="title anim d1">3つは、“入れ子”の関係</h2>
+        <p class="body anim d2">AIを語るとき、必ず出てくる<b>機械学習</b>と<b>深層学習</b>。むずかしそうだけど、関係はシンプル。<b>「AI」の中に機械学習があり</b>、その中でも深層学習は、<b>ニューラルネットワークを使った学習方法のひとつ</b>なんで<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+        <div class="figwrap anim d3">
+          <div class="nest">
+            <div class="nest-ai">
+              <div class="nest-head"><svg viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M32 9 C29.6 4.6 23 3.6 19.8 7.4 C14 7.2 10.2 12.6 12.2 17.6 C6.6 20.2 5.8 27.4 10.4 31 C6 34.6 7 41.4 12.2 43.6 C11 49 15.2 54.2 20.8 53.4 C23.6 57.6 29.8 57.2 32 53"/><path d="M32 9 C34.4 4.6 41 3.6 44.2 7.4 C50 7.2 53.8 12.6 51.8 17.6 C57.4 20.2 58.2 27.4 53.6 31 C58 34.6 57 41.4 51.8 43.6 C53 49 48.8 54.2 43.2 53.4 C40.4 57.6 34.2 57.2 32 53"/><path d="M32 9 V53"/><circle cx="19.6" cy="21.4" r="3.4"/><path d="M23 21.4 H32"/><circle cx="19.6" cy="36.6" r="3.4"/><path d="M23 36.6 H32"/><circle cx="44.4" cy="20.6" r="3.4"/><path d="M44.4 24 C44.4 29.4 40.6 31.8 35.6 31.8 H32"/></svg><span class="nlabel">AI（人工知能）</span></div>
+              <div class="nest-ml">
+                <div class="nest-head"><svg viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2" y="5.5" width="13.5" height="9.5" rx="2"/><path d="M6 19h5.5M8.75 15v4"/><circle cx="18.5" cy="6.5" r="1.5"/><path d="M18.5 3.2v1.3M18.5 8.5v1.3M15.2 6.5h1.3M20.5 6.5h1.3M16.2 4.2l.9.9M19.9 7.9l.9.9M16.2 8.8l.9-.9M19.9 5.1l.9-.9"/></svg><span class="nlabel">機械学習（ML）</span></div>
+                <div class="nest-dl">
+                  <div class="nest-head"><svg viewBox="0 0 24 24" fill="none" stroke="#24504F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><line x1="6" y1="6" x2="12" y2="6"/><line x1="6" y1="6" x2="12" y2="12"/><line x1="6" y1="6" x2="12" y2="18"/><line x1="6" y1="18" x2="12" y2="6"/><line x1="6" y1="18" x2="12" y2="12"/><line x1="6" y1="18" x2="12" y2="18"/><line x1="12" y1="6" x2="18" y2="12"/><line x1="12" y1="12" x2="18" y2="12"/><line x1="12" y1="18" x2="18" y2="12"/><circle cx="6" cy="6" r="2" fill="#EAF0EE"/><circle cx="6" cy="18" r="2" fill="#EAF0EE"/><circle cx="12" cy="6" r="2" fill="#EAF0EE"/><circle cx="12" cy="12" r="2" fill="#EAF0EE"/><circle cx="12" cy="18" r="2" fill="#EAF0EE"/><circle cx="18" cy="12" r="2" fill="#EAF0EE"/></svg><span class="nlabel">深層学習（DL）</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="note" style="text-align:center;margin-top:10px">※生成AIは、こうした技術を基盤として実現されるAIの一つ。</p>
+        </div>
+        <p class="body anim d4">この仕組みを、<b>ひとつずつ、やさしく</b>見ていきましょう😊</p>
+      </div>
+    </section>
+
+    <!-- Ch3: 機械学習 -->
+    <section class="page" data-toc="3｜機械学習(ML)">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ 機械学習（Machine Learning）</div>
+        <h2 class="title anim d1">ルールを“教える”のではなく、<br>例から“学ばせる”</h2>
+        <span class="term anim d1">教師あり学習／分類</span>
+        <p class="body anim d2">昔のコンピューターは、人が「こうなったら、こうしなさい」とルールを全部書いていました。<b>機械学習は、大量の例から、AI自身にルールを見つけさせる</b>やり方です。</p>
+        <div class="callout anim d3"><b>たとえば：</b>「これは猫」「これは犬」という写真を大量に見せると、AIが自分で“猫らしさ・犬らしさ”のパターンを見つけます。「猫はヒゲがあって耳が三角で…」と人が教え込まなくても、<b>例から学ぶ</b>んで<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#c67139" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8.2 4.9C6.8 3.6 5.3 4.4 4.3 6.5 3.3 8.6 3.5 10.7 4.8 11.4"/><path d="M15.8 4.9c1.4-1.3 2.9-.5 3.9 1.6 1 2.1.8 4.2-.5 4.9"/><path d="M12 3.9c2.9 0 5.3 2.4 5.7 5.5.2 1.2 1.2 1.9 1.2 3.4 0 3.1-3.1 5.3-6.9 5.3s-6.9-2.2-6.9-5.3c0-1.5 1-2.2 1.2-3.4C6.7 6.3 9.1 3.9 12 3.9z"/><path d="M9.5 10.4v.3" style="stroke-width:2.4"/><path d="M14.5 10.4v.3" style="stroke-width:2.4"/><path d="M12 12.8c1.1 0 1.9.4 1.9 1.1 0 .8-.9 1.5-1.9 1.5s-1.9-.7-1.9-1.5c0-.7.8-1.1 1.9-1.1z" fill="#c67139"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- Ch3: ニューラルネットワーク -->
+    <section class="page" data-toc="3｜ニューラルネットワーク">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ ニューラルネットワーク</div>
+        <h2 class="title anim d1">人間の脳をヒントにした<br>「つながる仕組み」</h2>
+        <span class="term anim d1">ニューラルネットワーク／ニューロン</span>
+        <p class="body anim d2">人間の脳にある神経細胞（ニューロン）のつながりをヒントに作られた仕組み。たくさんの<b>「小さな計算」をする場所がつながり</b>、情報を次へ渡しながら、入力からパターンを見つけていきま<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.4" y1="15.4" x2="21" y2="21"/></svg></span></p>
+        <div class="figwrap anim d3">
+          <svg viewBox="0 0 240 136" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#E5DCCC" stroke-width="1">
+              <line x1="30" y1="32" x2="120" y2="24"/><line x1="30" y1="32" x2="120" y2="50"/><line x1="30" y1="32" x2="120" y2="76"/><line x1="30" y1="32" x2="120" y2="102"/>
+              <line x1="30" y1="59" x2="120" y2="24"/><line x1="30" y1="59" x2="120" y2="50"/><line x1="30" y1="59" x2="120" y2="76"/><line x1="30" y1="59" x2="120" y2="102"/>
+              <line x1="30" y1="86" x2="120" y2="24"/><line x1="30" y1="86" x2="120" y2="50"/><line x1="30" y1="86" x2="120" y2="76"/><line x1="30" y1="86" x2="120" y2="102"/>
+              <line x1="120" y1="24" x2="210" y2="46"/><line x1="120" y1="24" x2="210" y2="78"/><line x1="120" y1="50" x2="210" y2="46"/><line x1="120" y1="50" x2="210" y2="78"/>
+              <line x1="120" y1="76" x2="210" y2="46"/><line x1="120" y1="76" x2="210" y2="78"/><line x1="120" y1="102" x2="210" y2="46"/><line x1="120" y1="102" x2="210" y2="78"/>
+            </g>
+            <g fill="#FCFAF6" stroke="#2E6468" stroke-width="1.8">
+              <circle cx="30" cy="32" r="6.5"/><circle cx="30" cy="59" r="6.5"/><circle cx="30" cy="86" r="6.5"/>
+              <circle cx="120" cy="24" r="6.5"/><circle cx="120" cy="50" r="6.5"/><circle cx="120" cy="76" r="6.5"/><circle cx="120" cy="102" r="6.5"/>
+              <circle cx="210" cy="46" r="6.5" fill="#C67139" stroke="#C67139"/><circle cx="210" cy="78" r="6.5" fill="#C67139" stroke="#C67139"/>
+            </g>
+            <text x="30" y="126" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#82796A">入力</text>
+            <text x="120" y="126" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#82796A">つながり（層）</text>
+            <text x="210" y="126" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#82796A">判断</text>
+          </svg>
+          <p class="figcap">小さな計算（●）がつながり、層を通って「判断」へ</p>
+        </div>
+        <p class="lead anim d4">たとえば「犬」を見分けるなら──</p>
+        <div class="card anim d4"><span class="n">1</span><div class="tx"><p style="font-size:15px;color:var(--brown)">画像が入力される</p></div></div>
+        <div class="card anim d5"><span class="n">2</span><div class="tx"><p style="font-size:15px;color:var(--brown)">線・色・形などの<b>小さな特徴</b>を見る</p></div></div>
+        <div class="card anim d5"><span class="n">3</span><div class="tx"><p style="font-size:15px;color:var(--brown)">組み合わせて、<b>耳・目・鼻などのパーツ</b>へ</p></div></div>
+        <div class="card anim d6"><span class="n terra">4</span><div class="tx"><p style="font-size:15px;color:var(--brown)">さらに組み合わせて、<b>「犬っぽい！」</b>という判断へ</p></div></div>
+        <p class="callout anim d6">それぞれのつながりには「どれくらい重要？」を表す<b>“重み”</b>があり、<b>学習すると、この重みが調整</b>されていきま<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- Ch3: 深層学習 -->
+    <section class="page" data-toc="3｜深層学習(DL)">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ 深層学習（Deep Learning）</div>
+        <h2 class="title anim d1">ニューラルネットワークを、<br>何層も重ねて“深く”</h2>
+        <span class="term anim d1">ニューラルネットワーク／特徴量</span>
+        <p class="body anim d2">3-3で見たニューラルネットワークを、<b>何層も重ねて、より複雑なパターンを学べる</b>ようにしたものが<b>深層学習（Deep Learning）</b>です。「深層」の“深い”とは、計算する層がたくさんあるというこ<span class="nb">と<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+        <div class="figwrap anim d3">
+          <svg viewBox="0 0 580 140" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="42" width="118" height="58" rx="11" fill="#FCFAF6" stroke="#E5DCCC" stroke-width="1.5"/>
+            <text x="67" y="68" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#4A3220">線・輪郭</text>
+            <text x="67" y="87" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#B0A695">浅い層</text>
+            <rect x="148" y="42" width="118" height="58" rx="11" fill="#E4ECEB" stroke="#2E6468" stroke-width="1.5"/>
+            <text x="207" y="68" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#24504F">目・鼻など</text>
+            <text x="207" y="87" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#7FA39E">パーツ</text>
+            <rect x="288" y="42" width="118" height="58" rx="11" fill="#EAF0EE" stroke="#24504F" stroke-width="1.5"/>
+            <text x="347" y="75" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#24504F">顔全体</text>
+            <rect x="428" y="42" width="118" height="58" rx="11" fill="#4A3220"/>
+            <text x="487" y="75" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="14" font-weight="600" fill="#F8F3EC">〇〇さんだ!</text>
+            <line x1="128" y1="71" x2="146" y2="71" stroke="#C67139" stroke-width="2"/>
+            <line x1="268" y1="71" x2="286" y2="71" stroke="#C67139" stroke-width="2"/>
+            <line x1="408" y1="71" x2="426" y2="71" stroke="#C67139" stroke-width="2"/>
+            <text x="290" y="128" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#82796A">浅い理解 → だんだん深い理解へ</text>
+          </svg>
+          <p class="figcap">顔を見分けるとき、私たちの脳も、こんなふうに段階を追って理解しています</p>
+        </div>
+        <p class="body anim d4">このように、小さな特徴を組み合わせながら、単純なもの → 複雑なものへと、何段階も処理していきま<span class="nb">す<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span></p>
+        <p class="lead anim d4">つまり……</p>
+        <div class="card anim d5"><span class="n">NN</span><div class="tx"><h3>ニューラルネットワーク</h3><p>情報をつないで処理する「仕組み」</p></div></div>
+        <div class="card anim d5"><span class="n terra">DL</span><div class="tx"><h3>深層学習</h3><p>そのニューラルネットワークを、何層も重ねて学習する方法</p></div></div>
+        <p class="callout anim d6">ニューラルネットワークを深くしたものが、深層学習。——まずは、これだけ覚えておけば十分で<span class="nb">す<svg class="smile" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3C6.5 3 3 6.5 3 12C3 17.5 6.5 21 12 21L21 21L21 12C21 6.5 17.5 3 12 3Z" fill="#4A3220"/><circle cx="9.5" cy="11" r="1.3" fill="#F8F3EC"/><circle cx="14.5" cy="11" r="1.3" fill="#F8F3EC"/><path d="M9 14.8Q12 18 15 14.8" stroke="#F8F3EC" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- 12 Ch3 4ステップ -->
+    <section class="page" data-toc="3｜どうやって動く?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ AIはどうやって動いている?</div>
+        <h2 class="title anim d1">学習から出力までの4ステップ</h2>
+        <div class="card anim d2"><span class="n">1</span><div class="tx"><p style="font-size:15px;color:var(--brown)">大量のデータから<b>学習する</b></p></div></div>
+        <div class="card anim d3"><span class="n">2</span><div class="tx"><p style="font-size:15px;color:var(--brown)">データの中から<b>「パターン」を学ぶ</b></p></div></div>
+        <div class="card anim d4"><span class="n">3</span><div class="tx"><p style="font-size:15px;color:var(--brown)">入力された情報をもとに<b>計算する</b></p></div></div>
+        <div class="card anim d5"><span class="n terra">4</span><div class="tx"><p style="font-size:15px;color:var(--brown)">結果を<b>生成する</b></p></div></div>
+      </div>
+    </section>
+
+    <!-- NEW: 計算って何してる? -->
+    <section class="page" data-toc="3｜「計算する」って?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ もう少しくわしく</div>
+        <h2 class="title anim d1">「計算する」って、<br>何してるの?</h2>
+        <span class="term anim d1">推論／確率</span>
+        <p class="body anim d2">「計算」と聞くと身構えちゃうけど、やっていることはシンプル。AIは<b>「次に、どの言葉が来そうか」</b>を、確率で出しているんです。</p>
+        <p class="lead anim d3">たとえば「日本の首都は…?」の続きなら──</p>
+        <div class="probs anim d3">
+          <div class="prob"><span class="w">東京</span><div class="bar"><i class="win" style="--p:92%"></i></div><span class="pct">92%</span></div>
+          <div class="prob"><span class="w">大阪</span><div class="bar"><i style="--p:4%"></i></div><span class="pct">4%</span></div>
+          <div class="prob"><span class="w">京都</span><div class="bar"><i style="--p:2%"></i></div><span class="pct">2%</span></div>
+        </div>
+        <p class="body anim d4">言葉を数字に変え、学習で身につけた大量の<b>「重み」</b>を使って計算し、<b>いちばん点数の高いトークン（例の場合、東京）</b>を選びます。そして、選んだトークンを含めて、また次のトークンを予測する。</p>
+        <p class="callout anim d4"><svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.4" y1="15.4" x2="21" y2="21"/></svg> <b>トークン</b> ＝ AIが文章を扱うときの「小さな単位」</p>
+        <p class="body anim d5">このようにAIは、文章を小さな単位（トークン）に分けながら、<b>次に来る可能性が高いトークンを一つずつ予測</b>して、文章を組み立てていきます。</p>
+        <p class="callout anim d6">つまり計算＝<b>「次はどのトークンがきそうかを、確率で出している」</b>というこ<span class="nb">と<svg class="smile" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3C6.5 3 3 6.5 3 12C3 17.5 6.5 21 12 21L21 21L21 12C21 6.5 17.5 3 12 3Z" fill="#4A3220"/><circle cx="9.5" cy="11" r="1.3" fill="#F8F3EC"/><circle cx="14.5" cy="11" r="1.3" fill="#F8F3EC"/><path d="M9 14.8Q12 18 15 14.8" stroke="#F8F3EC" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg></span>（くわしい中身は、あとの「LLMの頭の中」ページ<span class="nb">で<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span>）</p>
+      </div>
+    </section>
+
+    <!-- 13 Ch3 AI≠検索 -->
+    <section class="page" data-toc="3｜AI≠検索エンジン">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>3 ・ よくある誤解</div>
+        <h2 class="title anim d1">「AI＝検索」ではない</h2>
+        <p class="body anim d2">初心者さんがいちばん混同しやすいところ。<b>役割が違う道具</b>です。</p>
+        <table class="tbl anim d3">
+          <thead><tr><th></th><th>検索エンジン</th><th>生成AI</th></tr></thead>
+          <tbody>
+            <tr><td>役割</td><td>情報を探す</td><td>情報をもとに生成する</td></tr>
+            <tr><td>返すもの</td><td>Webページの一覧</td><td>文章・画像を新しく作る</td></tr>
+            <tr><td>使い方</td><td>結果を見る</td><td>対話しながら作れる</td></tr>
+          </tbody>
+        </table>
+        <p class="note anim d4">※ 最近の生成AIにはWeb検索機能つきも増加。「完全な別物」ではなく、役割が違う道具、と捉えると◎😊</p>
+      </div>
+    </section>
+
+    <!-- 14 Ch4 種類 -->
+    <section class="page" data-toc="4｜AIの種類">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>4 ・ AIにはどんな種類がある?</div>
+        <h2 class="title anim d1">大きく4タイプ</h2>
+        <div class="card anim d2"><span class="n terra">①</span><div class="tx"><h3>生成するAI</h3><p>ChatGPT／Claude／画像・動画・音声生成 など</p></div></div>
+        <div class="card anim d3"><span class="n">②</span><div class="tx"><h3>認識するAI</h3><p>顔認識／音声認識／画像認識／OCR</p></div></div>
+        <div class="card anim d4"><span class="n">③</span><div class="tx"><h3>予測・分析するAI</h3><p>売上予測／レコメンド／需要予測／データ分析</p></div></div>
+        <div class="card anim d5"><span class="n">④</span><div class="tx"><h3>自動化・支援するAI</h3><p>チャットボット／業務支援／AIエージェント</p></div></div>
+      </div>
+    </section>
+
+    <!-- 15 Ch4 特化/汎用 -->
+    <section class="page" data-toc="4｜特化型と汎用目的、その先は？">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>4 ・ もうひとつの分け方</div>
+        <h2 class="title anim d1">「得意の広さ」で見る</h2>
+        <p class="body anim d2">AIは、<b>“どこまで広くこなせるか”</b>でも分けられます。これまで・いま・その先を、3つのタイプで見てみましょう。</p>
+        <div class="card anim d3"><span class="n">特</span><div class="tx"><h3>特化型AI</h3><p>特定の目的・タスクに特化したAI。ひとつの仕事では非常に高い能力を発揮しても、<b>想定されていない別の仕事には、そのままでは対応できません</b>。<br><span style="color:var(--taupe)">例：翻訳／画像分類／音声認識／将棋・囲碁など</span></p></div></div>
+        <div class="card anim d4"><span class="n">汎</span><div class="tx"><h3>汎用目的AI（GPAI）</h3><p>幅広い異なるタスクに対応できるAIモデル。<b>ひとつのモデルをさまざまな用途に</b>利用できます。現在の生成AIを支える基盤モデルには、このような汎用目的のモデルがあります。<br><span style="color:var(--taupe)">例：文章作成／要約／翻訳／コード／質問応答など</span></p></div></div>
+        <div class="card anim d5"><span class="n terra">?</span><div class="tx"><h3>AGI <span style="font-size:12px;color:var(--terra);font-weight:700">未来?</span></h3><p>人間のように、<b>幅広い知的課題を理解・学習・適応し、解決できる</b>AIを目指す概念。どこまでの能力をAGIと呼ぶのかについては、まだ議論があります。</p></div></div>
+        <p class="callout anim d6">これまでのAIには特定の仕事に特化したものが多くありました。<br>一方、現在は、ひとつのモデルを幅広いタスクに利用できる<b>「汎用目的AI（GPAI）」</b>も私たちの仕事に浸透しています<span class="nb">ね<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span><br>さらにその先に、人間のような汎用的な知能を目指す<b>「AGI」</b>という概念がありま<span class="nb">す<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M32 9 C29.6 4.6 23 3.6 19.8 7.4 C14 7.2 10.2 12.6 12.2 17.6 C6.6 20.2 5.8 27.4 10.4 31 C6 34.6 7 41.4 12.2 43.6 C11 49 15.2 54.2 20.8 53.4 C23.6 57.6 29.8 57.2 32 53"/><path d="M32 9 C34.4 4.6 41 3.6 44.2 7.4 C50 7.2 53.8 12.6 51.8 17.6 C57.4 20.2 58.2 27.4 53.6 31 C58 34.6 57 41.4 51.8 43.6 C53 49 48.8 54.2 43.2 53.4 C40.4 57.6 34.2 57.2 32 53"/><path d="M32 9 V53"/><circle cx="19.6" cy="21.4" r="3.4"/><path d="M23 21.4 H32"/><circle cx="19.6" cy="36.6" r="3.4"/><path d="M23 36.6 H32"/><circle cx="44.4" cy="20.6" r="3.4"/><path d="M44.4 24 C44.4 29.4 40.6 31.8 35.6 31.8 H32"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- NEW: ChatGPTは特化型? AGI? -->
+    <section class="page" data-toc="4｜ChatGPTやClaudeは何者？">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>4 ・ ちょっと整理</div>
+        <h2 class="title anim d1">ChatGPTやClaudeは<br>特化型？汎用目的？AGI？</h2>
+        <p class="body anim d2">「なんでもできるように見えるけど、いったい何者？」ChatGPTやClaudeのような生成AIは、<b>文章作成・要約・翻訳・コード作成</b>など、幅広いタスクに使えますよね。</p>
+        <div class="concept anim d3">「得意の広さ」以外に、<b>「どんな情報を扱える？」</b>という、まったく別のものさしがありま<span class="nb">す<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span></div>
+        <div class="card anim d4"><span class="n">単</span><div class="tx"><h3>シングルモーダル</h3><p>主に<b>1種類の情報</b>を扱う。<br><span style="color:var(--taupe)">テキスト｜画像｜音声</span></p></div></div>
+        <div class="card anim d5"><span class="n terra">多</span><div class="tx"><h3>マルチモーダル</h3><p><b>複数の種類の情報</b>を扱う。<br><span style="color:var(--taupe)">テキスト＋画像＋音声＋動画 など</span></p></div></div>
+        <p class="callout anim d6">つまり、<b>「幅広い仕事ができるか」</b>と<b>「いろいろな情報を扱えるか」</b>は、別の話なんで<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- 特化 × モーダルの組み合わせ -->
+    <section class="page" data-toc="4｜特化 × モーダルの組み合わせ">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>4 ・ 2つのものさしで見ると</div>
+        <h2 class="title anim d1">🧩 だから、こんな<br>組み合わせもある</h2>
+        <div class="card anim d2"><span class="n">A</span><div class="tx"><h3>特化型 × シングルモーダル</h3><p>画像だけを見て病変を検出するAI。<br><span style="color:var(--taupe)">→ 画像という1種類の情報を扱い、特定の目的に特化。</span></p></div></div>
+        <div class="card anim d3"><span class="n">B</span><div class="tx"><h3>特化型 × マルチモーダル</h3><p>画像＋テキストを使って、特定の業務を行うAI。<br><span style="color:var(--taupe)">→ 複数の情報を扱うけれど、目的は限定されている。</span></p></div></div>
+        <div class="card anim d4"><span class="n terra">C</span><div class="tx"><h3>より汎用的 × マルチモーダル</h3><p>ChatGPT など。テキスト・画像・音声などを扱い、文章作成・要約・翻訳・コードなど<b>幅広いタスクに対応</b>。</p></div></div>
+        <p class="note anim d5">※ 日本のAI用語では「汎用AI（汎用人工知能／AGI）」は、人間みたいに何でもこなす“まだ実現していないAI”を指すことが多く、厳密な定義では、ChatGPTも“特化型”に分類されることがあります。</p>
+      </div>
+    </section>
+
+    <!-- NEW: 「当てる」AIと「作る」AI -->
+    <section class="page" data-toc="4｜「当てる」AIと「作る」AI">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>4 ・ 生成AIは、何が“新しい”?</div>
+        <h2 class="title anim d1">「当てる」AIと、<br>「作る」AI</h2>
+        <p class="body anim d2">同じ“学んだパターンを使う”でも、これまでのAIと生成AIでは、やっていることが少し違います。</p>
+        <table class="tbl anim d3">
+          <thead><tr><th></th><th>これまでのAI</th><th>生成AI</th></tr></thead>
+          <tbody>
+            <tr><td>やること</td><td>予測・判定・分類</td><td>新しく生成する</td></tr>
+            <tr><td>ひとことで</td><td>「これは〇〇」と当てる</td><td>「〇〇を作りました」と生み出す</td></tr>
+            <tr><td>例</td><td>予測変換／おすすめ／顔認識／音声認識</td><td>ChatGPT・Claude・Gemini／テキスト・画像・動画生成など</td></tr>
+          </tbody>
+        </table>
+        <p class="callout anim d4">学んだパターンを、<b>「当てる」ために使うか、「作る」ために使うか</b>。ここが、生成AIが“新しい”と言われる大きな理由です🌱</p>
+      </div>
+    </section>
+
+    <!-- 16 Ch5 できること -->
+    <section class="page" data-toc="5｜生成AIでできること">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>5 ・ 生成AIで、何ができる?</div>
+        <h2 class="title anim d1">得意なこと、ざっと。</h2>
+        <ul class="plain anim d2">
+          <li><b>文章</b>：SNS投稿／メール／要約／アイデア出し</li>
+          <li><b>画像</b>：イラスト／デザイン案／写真の加工</li>
+          <li><b>動画・音声</b>：動画生成／台本／字幕／読み上げ</li>
+          <li><b>プログラミング</b>：コードを書く／エラー解決／アプリ作りの補助</li>
+          <li><b>データ</b>：Excelの分析／グラフ作成／集計</li>
+        </ul>
+        <p class="callout anim d3">この“何でもできる感”が、いまのブームの正体。次のページから、その<b>しくみ（Transformer・LLM）</b>をのぞいてみましょ<span class="nb">う<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.4" y1="15.4" x2="21" y2="21"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- 17 Ch5 Transformer（NEW） -->
+    <section class="page" data-toc="5｜Transformer">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>5 ・ 生成AIの大きな転換点</div>
+        <h2 class="title anim d1">Transformer<br>（トランスフォーマー）</h2>
+        <p class="lead anim d2">文章の「つながり」を捉える仕組み</p>
+        <p class="body anim d2">2017年に発表されたTransformerは、<b>文章の中にある言葉同士の関係を効率よく捉える</b>ための構<span class="nb">造<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+        <div class="concept anim d3">その中心となる仕組みのひとつが、<b>Attention（注意機構）</b>。「この言葉を理解するために、<b>どの言葉に注目すればいい？</b>」を<b>計算</b>する仕組みです。</div>
+        <p class="lead anim d4">たとえば──</p>
+        <div class="figwrap anim d4">
+          <svg viewBox="0 0 580 150" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 445 60 Q 316 2 188 60" fill="none" stroke="#C67139" stroke-width="2" opacity="0.8"/>
+            <path d="M 528 64 Q 358 -4 188 64" fill="none" stroke="#2E6468" stroke-width="2" opacity="0.5"/>
+            <g font-family="Shippori Mincho,serif" font-size="16" font-weight="600" fill="#4A3220" text-anchor="middle">
+              <text x="68" y="90">友だちが</text><text x="188" y="90">カフェを</text><text x="320" y="90">教えてくれた</text><text x="445" y="90">そこは</text><text x="528" y="90">静かだった</text>
+            </g>
+            <text x="290" y="130" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#82796A">「そこ」が“カフェ”を指すと、文全体から判断できる</text>
+          </svg>
+        </div>
+        <p class="body anim d5">「そこ」という言葉を理解するとき、<b>「カフェ」との関係が重要</b>だと捉えることができます。</p>
+        <p class="body anim d5">つまり、言葉を一つずつバラバラに見るのではなく、<b>文章の中の言葉同士の関係を見ながら、文脈を捉える</b>ことができるので<span class="nb">す<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span></p>
+        <p class="callout anim d6">では、このTransformerを使って、どうやって<b>「大量の言葉を学んだAI」</b>が作られるのでしょ<span class="nb">う<svg class="smile" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3C6.5 3 3 6.5 3 12C3 17.5 6.5 21 12 21L21 21L21 12C21 6.5 17.5 3 12 3Z" fill="#4A3220"/><circle cx="9.5" cy="11" r="1.3" fill="#F8F3EC"/><circle cx="14.5" cy="11" r="1.3" fill="#F8F3EC"/><path d="M9 14.8Q12 18 15 14.8" stroke="#F8F3EC" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>？</span></p>
+      </div>
+    </section>
+
+    <!-- 18 Ch5 LLMができるまで -->
+    <section class="page" data-toc="5｜LLMができるまで">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>5 ・ LLM（大規模言語モデル）</div>
+        <h2 class="title anim d1">大量の言葉から学び、<br>LLMになる</h2>
+        <p class="body anim d2">LLMは、<b>Large Language Model（大規模言語モデル）</b>のこと。大量のテキストデータなどを使って、<b>言葉のパターンや関係を学習</b>した大規模なAIモデルです。</p>
+        <p class="lead anim d2">ざっくり言えば、こんな流れで作られます。</p>
+        <div class="recipe anim d3">
+          <div class="step"><span class="num">1</span><div><h3>たくさんのデータを集める</h3><span class="term">データ収集・選別</span><p>Web上の文章、書籍、記事など、さまざまなデータを集めます。ただし、集めたものをそのまま使うわけではありません。重複や不要なデータを取り除いたり、品質や安全性を考慮して、学習に使うデータを整えます。</p></div></div>
+          <div class="step"><span class="num">2</span><div><h3>AIが扱える形にする</h3><span class="term">前処理・トークン化</span><p>文章を、AIが計算できる形に変換します。文章は<b>トークン</b>という小さな単位に分けられ、数字として扱える形になります。</p><div class="tokflow">「こんにちは」<span class="a">→</span>トークン<span class="a">→</span>数字のまとまり</div><p style="font-size:11.5px;color:var(--taupe);margin-top:4px">※ トークンは、必ずしも「単語」そのものではありません。</p></div></div>
+          <div class="step"><span class="num">3</span><div><h3>学習するモデルを用意する</h3><span class="term">Transformer</span><p>言葉同士の関係を捉えるための<b>Transformer</b>を使ったモデルを用意します。このモデルには、たくさんの<b>パラメータ（学習によって調整される数値）</b>があります。</p></div></div>
+          <div class="step"><span class="num">4</span><div><h3>大量のデータで「事前学習」する</h3><span class="term">事前学習（Pre-training）</span><p>「この文脈なら、次にどんなトークンが来そう？」という予測を、繰り返し学習します。予測と実際のデータとの差をもとに、パラメータを少しずつ調整。これを大量に繰り返すことで、言葉のパターンや関係を学んでいきます。</p></div></div>
+          <div class="step"><span class="num">5</span><div><h3>人間が使いやすいように調整する</h3><span class="term">微調整・アライメント</span><p>事前学習したモデルを、そのまま使うとは限りません。人間の指示に従いやすくしたり、望ましい回答をしやすくしたりするために、追加の学習や調整を行います。</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19 Ch5 頭の中（NEW vectorization） -->
+    <section class="page" data-toc="5｜LLMの頭の中">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>5 ・ LLMの頭の中</div>
+        <h2 class="title anim d1">「東京」は、どう出てくる?</h2>
+        <span class="term anim d1">言葉を数値で表す｜Embedding（埋め込み）</span>
+        <p class="body anim d2">「日本の首都はどこ?」と聞かれたとき、LLMの中ではざっくりこんな処理が行われます。</p>
+        <div class="figwrap anim d3">
+          <svg viewBox="0 0 560 250" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="16" width="150" height="52" rx="10" fill="#FCFAF6" stroke="#2E6468" stroke-width="1.6"/>
+            <text x="85" y="47" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#4A3220">日本の首都はどこ?</text>
+            <text x="85" y="92" text-anchor="middle" font-family="Noto Sans Mono CJK JP,monospace" font-size="10" fill="#82796A">0.12, 0.55, -0.08 …</text>
+            <text x="85" y="108" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#C67139">数値化（ベクトル化）</text>
+            <line x1="85" y1="70" x2="85" y2="78" stroke="#E5DCCC" stroke-width="1.6"/>
+            <rect x="210" y="16" width="340" height="150" rx="12" fill="#EAF0EE" stroke="#24504F" stroke-width="1.4"/>
+            <text x="228" y="38" font-family="sans-serif" font-size="12" fill="#24504F">事前に学習した“意味の世界”</text>
+            <circle cx="300" cy="80" r="4" fill="#82796A"/><text x="300" y="72" text-anchor="middle" font-size="11" fill="#82796A">パリ</text>
+            <circle cx="470" cy="70" r="4" fill="#82796A"/><text x="470" y="62" text-anchor="middle" font-size="11" fill="#82796A">北京</text>
+            <circle cx="360" cy="130" r="4" fill="#82796A"/><text x="360" y="148" text-anchor="middle" font-size="11" fill="#82796A">ニューヨーク</text>
+            <circle cx="400" cy="95" r="9" fill="#C67139"/><text x="400" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="#4A3220">東京</text>
+            <text x="380" y="120" text-anchor="middle" font-size="10" fill="#C67139">「日本＋首都」に最も近い</text>
+            <text x="380" y="196" text-anchor="middle" font-family="Shippori Mincho,serif" font-size="16" font-weight="600" fill="#4A3220">→「東京」を選び、続きを組み立てる</text>
+            <text x="380" y="222" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#82796A">東京 → が → 日本 → の → …「東京が日本の首都です。」</text>
+          </svg>
+        </div>
+        <div class="evo anim d4">
+          <div class="estep"><span class="enum">1</span><p class="ename">入力をトークンに分ける</p><p class="eaim">「日本」「の」「首都」「は」「どこ」…と、文章を<b>トークン</b>という小さな単位に分けます。</p></div>
+          <div class="estep"><span class="enum">2</span><p class="ename">トークンを数値の表現にする</p><p class="eaim">言葉をそのまま扱えないので、トークンを<b>数値のまとまり（ベクトル）</b>として表現。これを<b>埋め込み（Embedding）</b>と呼びます。</p></div>
+          <div class="estep"><span class="enum">3</span><p class="ename">文脈を処理する</p><p class="eaim">TransformerのAttentionで、「日本」「首都」「どこ」など<b>言葉同士の関係を考慮</b>し、文脈全体を処理します。</p></div>
+          <div class="estep"><span class="enum">4</span><p class="ename">次に来そうなトークンを予測する</p><p class="eaim">次に来る可能性のあるトークンの<b>確率</b>を計算します。</p>
+            <div class="probs">
+              <div class="prob"><span class="w">東京</span><div class="bar"><i class="win" style="--p:92%"></i></div><span class="pct">92%</span></div>
+              <div class="prob"><span class="w">大阪</span><div class="bar"><i style="--p:4%"></i></div><span class="pct">4%</span></div>
+              <div class="prob"><span class="w">京都</span><div class="bar"><i style="--p:2%"></i></div><span class="pct">2%</span></div>
+            </div>
+          </div>
+          <div class="estep"><span class="enum">5</span><p class="ename">「東京」を出力</p><p class="eaim">確率などをもとに、次のトークンが選ばれます → <b>東京</b>。でも、ここで終わりではありません。</p></div>
+          <div class="estep last"><span class="enum">6</span><p class="ename">また次のトークンを予測</p><p class="eaim">「日本の首都はどこ？東京」という文脈を含めて、次を予測。これを繰り返して、<b>「東京は日本の首都です。」</b>のような文章が生成されます。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 20 Ch5 プレイヤー -->
+    <section class="page" data-toc="5｜主なプレイヤー">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>5 ・ 2026年の主なプレイヤー</div>
+        <h2 class="title anim d1">代表的なサービス</h2>
+        <table class="tbl anim d2">
+          <thead><tr><th>サービス</th><th>開発元</th><th>ざっくり得意</th></tr></thead>
+          <tbody>
+            <tr><td>ChatGPT</td><td>OpenAI</td><td>何でも屋・画像や音声にも強い</td></tr>
+            <tr><td>Claude</td><td>Anthropic</td><td>自然な日本語・文章・コード</td></tr>
+            <tr><td>Gemini</td><td>Google</td><td>長文/PDF読解・Google連携</td></tr>
+            <tr><td>Copilot</td><td>Microsoft</td><td>Word・Excelなどオフィス業務</td></tr>
+            <tr><td>Grok</td><td>xAI</td><td>Xと連携したリアルタイム情報</td></tr>
+          </tbody>
+        </table>
+        <p class="note anim d3">※ AIモデルは数か月ごとに世代交代。「最強の1本」を探すより、<b style="color:var(--terra)">用途に合わせて使い分ける</b>のがおすす<span class="nb">め<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- 21 Ch6 エージェント -->
+    <section class="page band" data-toc="6｜AIエージェント">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>6 ・ 2026年の最前線</div>
+        <h2 class="title anim d1">AIエージェントの登場</h2>
+        <div class="concept anim d2" style="background:rgba(155,194,189,.18);border-left-color:#9BC2BD;color:#EAF0EE">これまでの生成AI＝「指示すると、答えやコンテンツを返してくれる」<br>AIエージェント＝<b style="color:#E8A87C">「目的を伝えると、自分で手順を考え、必要なツールを使って動いてくれる」</b></div>
+        <p class="body anim d3">つまりAIの使い方が、<b>「答えをもらう」から「仕事を任せる」へ</b>広がりはじめています。</p>
+        <p class="body anim d3">たとえば、<b>情報収集 → 情報を整理 → 資料を作成 → メールを下書き</b> といった複数の作業を、AIがつなげて進めることができます。</p>
+        <div class="anim d4" style="background:var(--cream);border-radius:14px;padding:15px 18px;margin:6px 0 18px;text-align:center;color:var(--brown);font-family:'Shippori Mincho',serif;font-size:17px;line-height:1.7;">AIが、<b style="color:var(--terra)">「賢いアシスタント」から「一緒に働く同僚」</b>のような存在へ。</div>
+        <p class="body anim d4">まずはこの感覚だけ持ち帰ってくださいね。<b>「AIは、“答える”から“動く”へ進化中なんだ</b><span class="nb">」<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#7a8a5e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><circle cx="15" cy="9" r="2"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- NEW: 用語の整理 -->
+    <section class="page" data-toc="6｜用語の整理">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>6 ・ ちょっと用語の整理</div>
+        <h2 class="title anim d1">似てる3つ、<br>こう違う</h2>
+        <p class="body anim d2">マルチモーダル・エージェント・AGI——似て見えるけど、実は<b>それぞれ別の“ものさし”</b>の話なんで<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#2E6468" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.4" y1="15.4" x2="21" y2="21"/></svg></span></p>
+        <div class="card anim d3"><span class="n">何</span><div class="tx"><h3>マルチモーダルAI</h3><p><b>「何を扱える？」</b>のものさし。テキスト・画像・音声・動画など、複数の種類の情報を扱えるAI。</p></div></div>
+        <div class="card anim d4"><span class="n">動</span><div class="tx"><h3>AIエージェント</h3><p><b>「目的に向かって、自律的に動ける？」</b>のものさし。目的を伝えると、必要な手順を組み立て、ツールを使いながら複数の作業を進められるAI。</p></div></div>
+        <div class="card anim d5"><span class="n terra">賢</span><div class="tx"><h3>AGI</h3><p><b>「どれだけ幅広い知的課題に対応できる？」</b>のものさし。人間のように幅広い知的課題を理解・学習・適応し、さまざまな仕事に対応できるAIを目指す概念。まだ実現していないとされる概念です。</p></div></div>
+        <p class="callout anim d6">だから、比べる相手ではなく、<b>それぞれ別の特徴</b>。たとえば現在のAIは、<b>「マルチモーダルな機能を持ち、AIエージェントとして動かすこともできる。でも、それだけでAGIというわけではない」</b>——という感じです😊</p>
+      </div>
+    </section>
+
+    <!-- Ch7 ハルシネーション 1: なぜ -->
+    <section class="page" data-toc="7｜なぜ間違える?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>7 ・ AIが間違えるのは、なぜ?</div>
+        <h2 class="title anim d1">「自信満々に間違える」<br>ワケ</h2>
+        <span class="term anim d1">ハルシネーション（Hallucination）</span>
+        <p class="body anim d2">AIは、人間のように「知っていることを思い出して答える」わけではありません。前に見たとおり、<b>「次に、どのトークンが来そうか」を確率的に予測</b>しながら、文章を生成しています。</p>
+        <div class="callout anim d3"><b>例：</b>「日本の首都は？」と聞かれたら、「東京」が続く確率が高いので、<b>「東京です」</b>といった答えを生成します。——ここまではいいのですが……</div>
+        <p class="body anim d4">でも問題は、<b>確かな情報がないことについても、もっともらしい文章を生成してしまう</b>ことがあるという点。たとえば、実在しない論文を、著者名や発表年まで含めて、あたかも実在するかのように生成してしまう。これが、<b>ハルシネーション（もっともらしい嘘）</b>です。</p>
+      </div>
+    </section>
+
+    <!-- Ch7 ハルシネーション 2: 3つの原因 -->
+    <section class="page" data-toc="7｜起きる原因①②">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>7 ・ なぜ、起きてしまう?</div>
+        <h2 class="title anim d1">起きてしまう、4つの理由</h2>
+        <div class="card anim d2"><span class="n">①</span><div class="tx"><h3>AIは「正しさ」を保証していない</h3><p>AIは、学習したデータのパターンをもとに、入力に対して<b>適切そうな出力</b>を生成します。だから、正しい情報が十分に得られない場合でも、もっともらしい文章を生成してしまうことがあります。</p></div></div>
+        <div class="card anim d3"><span class="n">②</span><div class="tx"><h3>「自然な文章」と「正しい事実」は別</h3><p>AIが得意なのは、<b>❌ 事実として正しい文章</b>ではなく <b>⭕️ 自然で文脈に合った文章</b>という側面があります。だから、<b>文章は100点なのに、内容は間違っている</b>——ということが起こります。</p></div></div>
+      </div>
+    </section>
+
+    <section class="page" data-toc="7｜起きる原因③④">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>7 ・ なぜ、起きてしまう?（つづき）</div>
+        <div class="card anim d2"><span class="n">③</span><div class="tx"><h3>学習データには、限界がある</h3><p>AIが学習したデータには、<b>偏りや誤り、情報の不足</b>があります。また、モデルによって学習データの範囲や更新時期にも違いがあります。そのため、新しい情報や、学習データに十分含まれていない情報では、誤ることがあります。</p><p style="font-size:11.5px;color:var(--taupe);margin-top:5px">※ Web検索など、外部の情報を参照できるAIもあります。</p></div></div>
+        <div class="card anim d3"><span class="n terra">④</span><div class="tx"><h3>「自信がある／ない」を、人間のようには感じていない</h3><p>「これはちょっと自信ないな…」と思いながら答えているわけではありません。間違った情報でも、<b>自信満々な文章として出力できてしまう</b>。だから「詳しく説明してくれたから正しい」とは限らないのです。</p></div></div>
+        <p class="callout anim d4">流暢で自信満々だから、人は「ちゃんと考えて誠実に答えている」と思い込みやすい。だからこそ、<b>受け取る側の“確かめる目”</b>が大切なんで<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="none" stroke="#c67139" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.2 12S6 5.2 12 5.2 21.8 12 21.8 12 18 18.8 12 18.8 2.2 12 2.2 12z"/><circle cx="12" cy="12" r="3.4"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- Ch7 ハルシネーション 3: どうする -->
+    <section class="page" data-toc="7｜だから、こう付き合う">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>7 ・ だから、こう付き合う</div>
+        <h2 class="title anim d1">完全には、なくせない</h2>
+        <p class="body anim d2">近年のAIモデルでは、確信のない回答を控えたり、不確実性を示したりするための調整も進んでいます。それでも、<b>ハルシネーションを完全になくすことは難しい</b>。まず、この前提に立つことがスタートライン🌱</p>
+        <div class="concept anim d3">AIの回答 ＝ 事実、ではない。</div>
+        <p class="body anim d4"><b>AIにアイデアを出してもらう → 人間が確認する → 必要なら直す。</b>AIは「答えをくれる先生」ではなく、<b>「一緒に考えてくれる、優秀なアシスタント」</b>です😊</p>
+      </div>
+    </section>
+
+    <!-- 23 Ch8 懸念点 -->
+    <section class="page" data-toc="8｜AIの懸念点">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>8 ・ AIの懸念点</div>
+        <h2 class="title anim d1">知っておけば、安全に使える</h2>
+        <ul class="plain anim d2">
+          <li><b>間違った情報</b>：重要な情報は必ず自分でも確認</li>
+          <li><b>個人・機密情報</b>：名前・住所・パスワード等はむやみに入力しない</li>
+          <li><b>著作権</b>：作風のまね・似た生成物のビジネス利用は要注意</li>
+          <li><b>かたより（バイアス）</b>：「ひとつの意見」として受けとめる</li>
+          <li><b>悪用</b>：ディープフェイク／なりすまし詐欺に注意</li>
+          <li><b>AIへの依存</b>：考える主体は、あくまで自分</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 24 Ch9 付き合い方 -->
+    <section class="page" data-toc="8｜どう付き合う?">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>8 ・ じゃあ、AIとどう付き合う?</div>
+        <h2 class="title anim d1">3つの姿勢</h2>
+        <div class="card anim d2"><span class="n">①</span><div class="tx"><h3>任せる（作業）</h3><p>手間のかかる“作業”はAIに。文章の下書き、要約、情報の整理、コードなど、<b>手を動かす部分</b>。</p></div></div>
+        <div class="card anim d3"><span class="n">②</span><div class="tx"><h3>一緒に考える（思考）</h3><p>“考えること”は、AIと一緒に。一人で悩まず、相談相手にしてアイデアや視点を広げる。<b>答えは丸投げしない</b>。</p></div></div>
+        <div class="card anim d4"><span class="n terra">③</span><div class="tx"><h3>最後は、人間が決める（決断）</h3><p>「自分はどうする?」を決める。ここは誰にもゆずらない、あなたの仕事。</p></div></div>
+        <p class="callout anim d5"><b>“作業”は任せて、“考えること”は一緒に。</b>そして最後は自分で決める——<b>役割を分けている</b>だけなんです😊</p>
+      </div>
+    </section>
+
+    <!-- 25 Ch10 AI×あなた -->
+    <section class="page band" data-toc="9｜AI×あなた">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>9 ・ 大切なのは、知識だけじゃない</div>
+        <h2 class="title anim d1">AI × あなた自身</h2>
+        <p class="body anim d2">これからの時代に本当に大切なのは、操作方法よりも──<br><b>AIに「何をさせたいか」を、自分で考えられる力</b>。</p>
+        <div class="concept anim d3" style="background:rgba(230,168,124,.16);border-left-color:#E8A87C;color:#F3E7DB">「AIを使える人」より、<br>「AIに何をさせたいか考えられる人」へ。</div>
+        <p class="body anim d4">あなたが積み重ねてきた知識・経験・想い。そこにAIを<b>掛け合わせる</b>と、あなたにしか生み出せない価値が生まれま<span class="nb">す<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg></span></p>
+      </div>
+    </section>
+
+    <!-- NEW: その力は、どう育てる? -->
+    <section class="page" data-toc="9｜その力の育て方">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>9 ・ その力は、どう育てる?</div>
+        <h2 class="title anim d1">「考えられる力」の<br>育て方</h2>
+        <p class="body anim d2">この力は、生まれつきじゃなく<b>“使いながら育つ”</b>もの。4つのコツ<span class="nb">を<svg class="iico" viewBox="0 0 64 64" fill="none" stroke="#c67139" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18.8 30.8 V11.9 a3.7 3.7 0 0 1 7.4 0 V27.9 L40 30.3 a7.4 7.4 0 0 1 6.3 7.3 V45.4 a7.6 7.6 0 0 1 -7.6 7.6 H27.4 a12 12 0 0 1 -8.3 -3.4 L11.1 42.1 a7.4 7.4 0 0 1 0 -10.6 Z"/><path d="M18.8 25 V40.2"/></svg></span></p>
+        <div class="card anim d2"><span class="n">①</span><div class="tx"><h3>まず、たくさん使ってみる</h3><p>“できること・できないこと”の肌感覚は、触った量だけ育つ。</p></div></div>
+        <div class="card anim d3"><span class="n">②</span><div class="tx"><h3>「めんどくさい」に気づく</h3><p>「これ、AIに頼めない?」と問うクセを。あなたの“面倒”が、AIの出番。</p></div></div>
+        <div class="card anim d4"><span class="n">③</span><div class="tx"><h3>“やりたいこと”で考える</h3><p>手順じゃなく、ゴールを言葉に。「何を実現したい?」が言えればOK。</p></div></div>
+        <div class="card anim d5"><span class="n terra">④</span><div class="tx"><h3>自分の経験と掛け合わせる</h3><p>困りごとを知ってるのは、あなただけ。経験こそ、最高のネタ元。</p></div></div>
+        <p class="callout anim d6"><b>使う → 気づく → 目的で考える → 強みと掛ける。</b>これをくり返すうちに、じわじわ育っていきます🌱</p>
+      </div>
+    </section>
+
+    <!-- 26 Ch11 7つの基本 -->
+    <section class="page" data-toc="10｜まず覚えること">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>10 ・ まず覚えること</div>
+        <h2 class="title anim d1">これだけ押さえればOK、7つ</h2>
+        <ul class="plain checklist" style="font-size:14.5px">
+          <li>AIは魔法ではない（データとパターンで処理）</li>
+          <li>AIにも得意・不得意がある（万能ではない）</li>
+          <li>AIは間違える（重要な情報は必ず確認）</li>
+          <li>入力する情報に注意（個人・機密情報を入れない）</li>
+          <li>AIに丸投げしない（考える主体は自分）</li>
+          <li>AIは「相談相手」として使える</li>
+          <li>まず、使ってみる（完璧に理解してからでなくていい）</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 27 最後に -->
+    <section class="page cover" data-toc="最後に">
+      <span class="bdot bd1"></span><span class="bdot bd2"></span>
+      <div class="inner">
+        <div class="kicker anim d1" style="color:#9BC2BD"><span class="dot"></span>最後に</div>
+        <p class="msg anim d2" style="font-size:26px">「AIに使われる」のではなく、<br>「AIを使って、<br>自分の可能性を広げる」</p>
+        <p class="tagline anim d3" style="margin-top:22px">AIを、怖がりすぎない。でも、過信もしない。<br>そんなふうに、付き合っていけたら🌱</p>
+        <p class="ver anim d4" style="margin-top:26px"><svg class="hleaf" viewBox="0 0 24 24" fill="none" stroke="#8BAE68" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5 19C5 11 11 5 19 5C19 13 13 19 5 19Z"/><path d="M5 19C9 15 13 11 19 5"/></svg> HacchiのやさしいAI塾</p>
+      </div>
+    </section>
+
+    <!-- その先へ：講座案内 -->
+    <section class="page" data-toc="この本の、その先へ">
+      <div class="inner">
+        <div class="kicker anim d1"><span class="dot"></span>この本の、その先へ</div>
+        <h2 class="title anim d1">「読むだけ」から、<br>「作る」へ。</h2>
+        <p class="body anim d2">このSNS投稿文 自動生成ツール（<b>投稿の下書き、ひと呼吸で。</b>）も、AIで作った“道具”のひとつ。ツールの中の“指示文”を書き換えれば、<b>あなたの感性や仕事内容に寄り添った道具</b>になります。</p>
+        <div class="toolcard anim d3">
+          <p style="font-family:'Shippori Mincho',serif;font-size:16px;font-weight:600;color:var(--brown);margin:0 0 4px">投稿の下書き、ひと呼吸で。</p>
+          <p style="font-size:12.5px;color:var(--taupe);margin:0 0 12px">テーマを入れるだけで、SNS投稿の下書きを3つ生成。</p>
+          <a class="ctabtn" href="https://claude.ai/artifact/LRfn8J1NXdMJW1KW5Bp1x3" target="_blank" rel="noopener">実際に触ってみる →</a>
+        </div>
+        <p class="lead anim d4">——そんな「自分の道具づくり」を、<b style="color:var(--terra)">4回シリーズ</b>で一緒に🌱</p>
+        <div class="evo anim d4">
+          <div class="estep"><span class="enum">1</span><p class="ename">動く感動</p><p class="eaim">AIに話しかけると、“動くもの”ができる。</p></div>
+          <div class="estep"><span class="enum">2</span><p class="ename">直す力</p><p class="eaim">思いどおりじゃなくても、お願いして直せる。</p></div>
+          <div class="estep"><span class="enum">3</span><p class="ename">自分ごと</p><p class="eaim">“指示文”を書き換えて、道具を“あなたの声”に。</p></div>
+          <div class="estep last"><span class="enum">4</span><p class="ename">届ける</p><p class="eaim">公開して、はじめて誰かに届ける。</p></div>
+        </div>
+        <div style="text-align:center;margin-top:8px">
+          <a class="ctabtn terra anim d5" href="https://claude.ai/artifact/Wdp2YtTUWVoUKpQf5naNSZ" target="_blank" rel="noopener">講座のくわしいご案内を見る →</a>
+          <p class="anim d5" style="font-size:12px;color:var(--taupe);margin-top:12px">🌱 HacchiのやさしいAI塾</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="hint" id="hint">スワイプ、または → で next</div>
+<nav class="nav">
+  <button id="prev" aria-label="前へ">‹</button>
+  <button id="next" aria-label="次へ">›</button>
+</nav>
+
+<!-- TOC -->
+<div class="toc" id="toc">
+  <div class="toc-panel">
+    <h3>もくじ</h3>
+    <div id="toclist"></div>
+  </div>
+</div>
+
+<script>
+  const track=document.getElementById('track');
+  const chapterTitles={0:'はじめに',1:'AIって、なに?',2:'AIの本質',3:'AIは、どう動く?',4:'AIの種類',5:'生成AIのしくみ',6:'AIエージェント',7:'AIが間違えるワケ',8:'AIとの付き合い方',9:'AI × あなた',10:'まず覚えること'};
+
+  // 各章の頭に「章扉」ページを差し込む
+  const seenCh=new Set();
+  [...track.querySelectorAll('.page')].forEach(p=>{
+    const parts=(p.dataset.toc||'').split('｜');
+    if(parts.length===2 && /^[0-9]+$/.test(parts[0]) && !seenCh.has(parts[0])){
+      const ch=parts[0]; seenCh.add(ch);
+      const dv=document.createElement('section');
+      dv.className='page divider';
+      dv.dataset.divider='1';
+      dv.dataset.toc=ch+'｜'+(chapterTitles[ch]||parts[1]);
+      dv.innerHTML='<div class="inner"><div class="dv-num anim d1">'+ch+'章</div><div class="dv-rule anim d1"></div><h2 class="dv-title anim d2">'+(chapterTitles[ch]||parts[1])+'</h2></div>';
+      track.insertBefore(dv,p);
+    }
+  });
+
+  const pages=[...track.querySelectorAll('.page')];
+  // 本文の絵文字を、そろえたSVGアイコンに置き換え（図はそのまま／最後の文字にくっつけて改行させない）
+  const ICONS={
+    '🌿':'<svg class="sprig" viewBox="0 0 24 24" fill="none" stroke="#9CAF88" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M5 19C5 11 11 5 19 5C19 13 13 19 5 19Z"/><path d="M3 21L19 5"/></svg>',
+    '✨':'<svg class="star" viewBox="0 0 24 24" fill="none" stroke="#E3B23C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L14.5 8.6L21.5 8.9L16 13.3L17.9 20.1L12 16.2L6.1 20.1L8 13.3L2.5 8.9L9.5 8.6Z"/></svg>',
+    '😊':'<svg class="smile" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3C6.5 3 3 6.5 3 12C3 17.5 6.5 21 12 21L21 21L21 12C21 6.5 17.5 3 12 3Z" fill="#4A3220"/><circle cx="9.5" cy="11" r="1.3" fill="#F8F3EC"/><circle cx="14.5" cy="11" r="1.3" fill="#F8F3EC"/><path d="M9 14.8Q12 18 15 14.8" stroke="#F8F3EC" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>',
+    '🌱':'<svg class="iico" viewBox="0 0 24 24" fill="#9BC46A" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="11.1" y="11" width="1.8" height="11" rx="0.9"/><path d="M12 12.6C13.1 7 18.7 4 21.7 5.6C21.7 10.7 16.4 14.2 12 12.6Z"/><path d="M12 13.2C11 9.6 6.4 7.6 3.8 9C3.8 12.5 7.9 15.2 12 13.2Z"/></svg>'
+  };
+  function makeIcon(html){ const t=document.createElement('span'); t.innerHTML=html; return t.firstChild; }
+  const EMO=/🌿|✨|😊|🌱/gu;
+  pages.forEach(pg=>{
+    const walker=document.createTreeWalker(pg, NodeFilter.SHOW_TEXT);
+    const hits=[];
+    while(walker.nextNode()){ const v=walker.currentNode.nodeValue; if(v.indexOf('🌿')>=0||v.indexOf('✨')>=0||v.indexOf('😊')>=0||v.indexOf('🌱')>=0) hits.push(walker.currentNode); }
+    hits.forEach(node=>{
+      const text=node.nodeValue; const frag=document.createDocumentFragment();
+      let last=0, m; EMO.lastIndex=0;
+      while((m=EMO.exec(text))!==null){
+        const before=text.slice(last,m.index), emoji=m[0];
+        if(before.length>0){
+          frag.appendChild(document.createTextNode(before.slice(0,-1)));
+          const nb=document.createElement('span'); nb.className='nb';
+          nb.appendChild(document.createTextNode(before.slice(-1)));
+          nb.appendChild(makeIcon(ICONS[emoji]));
+          frag.appendChild(nb);
+        } else { frag.appendChild(makeIcon(ICONS[emoji])); }
+        last=m.index+emoji.length;
+      }
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag,node);
+    });
+  });
+  const prev=document.getElementById('prev'), next=document.getElementById('next');
+  const counter=document.getElementById('counter'), progress=document.getElementById('progress');
+  const hint=document.getElementById('hint');
+  const N=pages.length;
+  let i=0;
+
+  // build TOC
+  const toc=document.getElementById('toc'), toclist=document.getElementById('toclist');
+  const groups=[]; let cur=null;
+  pages.forEach((p,n)=>{
+    const raw=p.dataset.toc||('ページ '+(n+1));
+    const isDiv=p.dataset.divider!==undefined;
+    const parts=raw.split('｜');
+    if(parts.length===2){
+      const ch=parts[0], title=parts[1];
+      if(cur && cur.ch===ch){ cur.pages.push({n,title,isDiv}); }
+      else { cur={ch,pages:[{n,title,isDiv}]}; groups.push(cur); }
+    } else { groups.push({special:true,n,title:raw}); cur=null; }
+  });
+  function addRow(n,label,title,kind){
+    const a=document.createElement('a');
+    a.className='toc-'+kind;
+    a.innerHTML='<span class="lbl">'+label+'</span><span class="ti">'+title+'</span>';
+    a.addEventListener('click',()=>{ go(n); closeToc(); });
+    toclist.appendChild(a);
+  }
+  groups.forEach(g=>{
+    if(g.special){ addRow(g.n,'',g.title,'plain'); return; }
+    if(/^[0-9]+$/.test(g.ch)){
+      const chTitle=chapterTitles[g.ch]||g.pages[0].title;
+      const head=g.pages.find(pg=>pg.isDiv)||g.pages[0];
+      addRow(head.n, g.ch+'章｜', chTitle, 'chapter');
+      const secs=g.pages.filter(pg=>!pg.isDiv);
+      if(secs.length>1){ secs.forEach((pg,idx)=>addRow(pg.n, g.ch+'-'+(idx+1), pg.title, 'section')); }
+    } else { addRow(g.pages[0].n, g.ch+'｜', g.pages[0].title, 'chapter'); }
+  });
+  document.getElementById('tocbtn').addEventListener('click',()=>toc.classList.add('open'));
+  toc.addEventListener('click',e=>{ if(e.target===toc) closeToc(); });
+  function closeToc(){ toc.classList.remove('open'); }
+
+  function go(n){
+    i=Math.max(0,Math.min(N-1,n));
+    track.style.transform=`translateX(-${i*100}%)`;
+    pages.forEach((p,k)=>p.classList.toggle('active',k===i));
+    counter.textContent=(i+1)+' / '+N;
+    progress.style.width=((i+1)/N*100)+'%';
+    prev.disabled=(i===0); next.disabled=(i===N-1);
+    hint.style.display = i===0 ? 'block':'none';
+  }
+  prev.addEventListener('click',()=>go(i-1));
+  next.addEventListener('click',()=>go(i+1));
+  document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')go(i+1); if(e.key==='ArrowLeft')go(i-1); });
+  let x0=null;
+  track.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+  track.addEventListener('touchend',e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>45) (dx<0?go(i+1):go(i-1)); x0=null; });
+  go(0);
+</script>
+</body>
+</html>
